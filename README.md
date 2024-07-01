@@ -6,12 +6,7 @@ This is a full-stack task application built using the MERN (MongoDB, Express, Re
 
 - [MERN task App with Material UI](#mern-task-app-with-material-ui)
 =======
-- [MERN Task manager App with Material UI](#mern-todo-app-with-material-ui)
-
-- [MERN task App with Material UI](#mern-task-app-with-material-ui)
-- [MERN Task Manager App with Material UI](#mern-task-manager-app-with-material-ui)
   - [Table of Contents](#table-of-contents)
-- [MERN task App with Material UI](#-head--mern-task-app-with-material-ui)
   - [Github](#github)
   - [Features](#features)
   - [Installation](#installation)
