@@ -1,10 +1,10 @@
-# MERN Todo App with Material UI
+# MERN Task Manager App with Material UI
 
 This is a full-stack Todo application built using the MERN (MongoDB, Express, React, Node.js) stack and Material UI for the user interface.
 
 ## Table of Contents
 
-- [MERN Todo App with Material UI](#mern-todo-app-with-material-ui)
+- [MERN Task manager App with Material UI](#mern-todo-app-with-material-ui)
   - [Table of Contents](#table-of-contents)
   - [Github](#github)
   - [Features](#features)
@@ -16,8 +16,8 @@ Check out the live demo of the app: [Demo Link](https://github.com/usman-monir/M
 
 ## Features
 
-- Add, edit, and delete todos
-- Mark todos as completed
+- Add, edit, and delete tasks
+- Mark tasks as completed
 - Responsive UI using Material UI
 - User authentication with JWT
 - Secure password hashing
@@ -29,7 +29,7 @@ Check out the live demo of the app: [Demo Link](https://github.com/usman-monir/M
 
    ```bash
    git clone https://github.com/usman-monir/MUI-based-task-manager-app.git
-   cd mern-todo-app
+   cd "MUI-based-task-manager-app"
 
 2. cd to backend and frontend and run npm install
 
