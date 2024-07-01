@@ -10,6 +10,13 @@ import NewTaskForm from './screens/Core/NewTaskForm';
 import EditTaskForm from './screens/Core/EditTaskForm';
 import NotFound from "./screens/Util/NotFound";
 
+// font styles
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
