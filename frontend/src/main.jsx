@@ -1,9 +1,32 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { createBrowserRouter, createRoutesFromElements,  RouterProvider, Route } from 'react-router-dom';
+import App from './App';
+import LoginScreen from './screens/Auth/LoginScreen';
+import RegisterScreen from './screens/Auth/RegisterScreen';
+import PrivateRoute from './components/PrivateRoute';
+import Tasks from './screens/Core/Tasks';
+import NewTaskForm from './screens/Core/NewTaskForm';
+import EditTaskForm from './screens/Core/EditTaskForm';
+import NotFound from "./screens/Util/NotFound";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/" element={<App />}>
+      <Route index path="login" element={<LoginScreen />} />
+      <Route path="register" element={<RegisterScreen />} />
+      <Route element={<PrivateRoute />}>
+        <Route path="/" element={<Tasks />} />
+        <Route path="tasks/add" element={<NewTaskForm />} />
+        <Route path="tasks/:id/edit" element={<EditTaskForm />} />
+      </Route>
+      <Route path="*" element={<NotFound/>} />
+    </Route>
+  )
+);
+
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+      <RouterProvider router={router} />
+  </React.StrictMode>
+);

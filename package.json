@@ -1,7 +1,7 @@
 {
-    "name": "todo_app",
+    "name": "task_app",
     "version": "1.0.0",
-    "description": "MUI based todo app with crud functionality",
+    "description": "MUI based task app with crud functionality",
     "scripts": {
       "server": "nodemon ./backend/server.js",
       "client": "cd frontend && npm run dev",

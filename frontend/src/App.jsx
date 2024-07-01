@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import React from "react";
+import { Outlet } from "react-router-dom";
 
-function App() {
-    return (
+const App = () => {
+  return (
     <>
-      <h1>Bismillah</h1>
+      <Outlet/>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;

@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from "dotenv";
 import cookieParser from 'cookie-parser';
 import connectToMongoDB from "./config/db.js";
+import userRoutes from "./routes/userRoutes.js"
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config()
