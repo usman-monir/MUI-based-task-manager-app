@@ -1,21 +1,24 @@
 import * as React from 'react';
+import { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Alert from '@mui/material/Alert';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { login } from '../../services/authService';
 
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
-      <Link color="inherit" href="https://github.com/usman-monir/MUI-based-task-manager-app.git">
+      <Link color="inherit" to="https://github.com/usman-monir/MUI-based-task-manager-app.git">
         Task Manager App
       </Link>{' '}
       {new Date().getFullYear()}
@@ -26,15 +29,50 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-export default function SignIn() {
-  const handleSubmit = (event) => {
+const LoginScreen = () => {
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-    // Login by calling backend api
+
+    const email = data.get('email');
+    const password = data.get('password');
+
+    setEmailError('');
+    setPasswordError('');
+    setErrorMessage('');
+
+    if (!email) {
+      setEmailError('Email is required');
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError('Invalid email address');
+    }
+
+    if (!password) {
+      setPasswordError('Password is required');
+    }
+
+    if (!email || !password)
+    {
+      return;
+    }
+
+    if (!emailError && !passwordError) {
+      try {
+        const response = await login(email, password);
+        console.log('Logged in:', response);
+        localStorage.setItem('userInfo', JSON.stringify(response));
+        navigate('/');
+      } catch (error) {
+        console.error('Error logging in:', error);
+        setErrorMessage(error.message || 'Failed to login');
+      }
+    }
   };
 
   return (
@@ -56,6 +94,7 @@ export default function SignIn() {
             Sign in
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+            {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
             <TextField
               margin="normal"
               required
@@ -65,6 +104,8 @@ export default function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
+              error={!!emailError}
+              helperText={emailError}
             />
             <TextField
               margin="normal"
@@ -75,6 +116,8 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              error={!!passwordError}
+              helperText={passwordError}
             />
             <Button
               type="submit"
@@ -98,3 +141,5 @@ export default function SignIn() {
     </ThemeProvider>
   );
 }
+
+export default LoginScreen;

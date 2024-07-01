@@ -2,7 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 
 const PrivateRoute = () => {
   // login to check if the user is logged in, usually by checking the JWT token in Cookies.
-  const userInfo = null;
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   return userInfo ? <Outlet /> : <Navigate to='/login' replace />;
 };
 export default PrivateRoute;

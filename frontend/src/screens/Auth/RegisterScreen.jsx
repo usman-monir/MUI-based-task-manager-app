@@ -1,15 +1,17 @@
 import * as React from 'react';
+import { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { register } from '../../services/authService';
 
 function Copyright(props) {
   return (
@@ -26,15 +28,68 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-export default function SignUp() {
-  const handleSubmit = (event) => {
+const RegisterScreen = () => {
+  const navigate = useNavigate();
+  const [nameError, setNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+
+    const name = data.get('name');
+    const email = data.get('email');
+    const password = data.get('password');
+    const confirmPassword = data.get('confirm_password');
+
+    setNameError('');
+    setEmailError('');
+    setPasswordError('');
+    setConfirmPasswordError('');
+    setErrorMessage('');
+
+    if (!name) {
+      setNameError('Name is required');
+      return;
+    }
+
+    if (!email) {
+      setEmailError('Email is required');
+      return;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError('Invalid email address');
+      return;
+    }
+
+    if (!password) {
+      setPasswordError('Password is required');
+      return;
+    }
+
+    if (!confirmPassword) {
+      setConfirmPasswordError('Confirm Password is required');
+      return;
+    }
+
+    if(password != confirmPassword) {
+      setConfirmPasswordError('Password mismatch!');
+      return;
+    }
+
     // Register a user by calling backend api
+    try {
+      const response = await register(name, email, password);
+      console.log('registered:', response);
+      navigate('/login');
+    } catch (error) {
+      console.error('Error registering:', error);
+      setErrorMessage(error.message || 'Failed to Register');
+    }
   };
 
   return (
@@ -56,6 +111,7 @@ export default function SignUp() {
             Register
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -66,6 +122,8 @@ export default function SignUp() {
                   id="name"
                   label="Name"
                   autoFocus
+                  error={!!nameError}
+                  helperText={nameError}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -76,6 +134,8 @@ export default function SignUp() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  error={!!emailError}
+                  helperText={emailError}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -87,6 +147,8 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  error={!!passwordError}
+                  helperText={passwordError}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -98,6 +160,8 @@ export default function SignUp() {
                   type="password"
                   id="confirm_password"
                   autoComplete="confirm-password"
+                  error={!!confirmPasswordError}
+                  helperText={confirmPasswordError}
                 />
               </Grid>
             </Grid>
@@ -123,3 +187,5 @@ export default function SignUp() {
     </ThemeProvider>
   );
 }
+
+export default RegisterScreen;
