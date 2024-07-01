@@ -1,0 +1,30 @@
+{
+    "name": "todo_app",
+    "version": "1.0.0",
+    "description": "MUI based todo app with crud functionality",
+    "scripts": {
+      "server": "nodemon ./backend/server.js",
+      "client": "cd frontend && npm run dev",
+      "dev": "concurrently \"npm run server\"  \"npm run client\"",
+      "test": "echo \"Error: no test specified\" && exit 1"
+     },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/usman-monir/MUI-based-task-manager-app.git"
+    },
+    "author": "Mohammad Usman Monir",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/usman-monir/MUI-based-task-manager-app.git/issues"
+    },
+    "homepage": "https://github.com/usman-monir/MUI-based-task-manager-app.git",
+    "devDependencies": {
+      "concurrently": "^8.2.2",
+      "nodemon": "^3.1.0"
+    },
+    "dependencies": {
+      "cookie-parser": "^1.4.6",
+      "dotenv": "^16.4.5",
+      "jsonwebtoken": "^9.0.2"
+    }
+  }
