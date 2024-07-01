@@ -5,7 +5,6 @@ This is a full-stack task application built using the MERN (MongoDB, Express, Re
 ## Table of Contents
 
 - [MERN task App with Material UI](#mern-task-app-with-material-ui)
-=======
   - [Table of Contents](#table-of-contents)
   - [Github](#github)
   - [Features](#features)
