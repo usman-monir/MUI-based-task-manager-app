@@ -1,5 +1,3 @@
-# MERN task App with Material UI
-=======
 # MERN Task Manager App with Material UI
 
 This is a full-stack task application built using the MERN (MongoDB, Express, React, Node.js) stack and Material UI for the user interface.
