@@ -7,11 +7,12 @@ import TextField from '@mui/material/TextField';
 import { Link, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import { Alert } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { register } from '../../services/authService';
+import AuthService from '../../services/authService';
 
 function Copyright(props) {
   return (
@@ -83,7 +84,7 @@ const RegisterScreen = () => {
 
     // Register a user by calling backend api
     try {
-      const response = await register(name, email, password);
+      const response = await  AuthService.register(name, email, password);
       console.log('registered:', response);
       navigate('/login');
     } catch (error) {

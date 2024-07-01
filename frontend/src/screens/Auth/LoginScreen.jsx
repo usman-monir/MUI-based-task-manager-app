@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Alert from '@mui/material/Alert';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { login } from '../../services/authService';
+import AuthService from '../../services/authService';
 
 function Copyright(props) {
   return (
@@ -64,7 +64,7 @@ const LoginScreen = () => {
 
     if (!emailError && !passwordError) {
       try {
-        const response = await login(email, password);
+        const response = await AuthService.login(email, password);
         console.log('Logged in:', response);
         localStorage.setItem('userInfo', JSON.stringify(response));
         navigate('/');
