@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Card, CardContent, Typography, Button } from '@mui/material';
+import { useState } from 'react';
+import { Card, CardContent, Typography, Button, Switch } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import TaskService from '../services/taskService';
 
@@ -20,13 +20,13 @@ const Task = ({ task, onDeleteTask }) => {
   };
 
   const toggleCompletion = async () => {
-    try {
-      const updatedTask = { ...task, completed: !isCompleted };
-      await TaskService.updateTask(task._id, updatedTask);
+
+    const updatedTask = { ...task, completed: !isCompleted };
+    const response = await TaskService.updateTask(task._id, updatedTask);
+    if (response?.success)
       setIsCompleted(!isCompleted);
-    } catch (error) {
-      console.error(`Failed to update task with ID ${task._id}:`, error);
-    }
+    else
+      console.error(`Failed to toggle task with ID ${task._id}:`, response?.message);
   };
 
   return (
@@ -38,12 +38,7 @@ const Task = ({ task, onDeleteTask }) => {
         backgroundColor: isCompleted ? 'grey.300' : 'white',
         opacity: isCompleted ? .5 : 1,
         transition: 'all 0.5s',
-        '&:hover': {
-          backgroundColor: 'grey.100',
-          cursor: 'pointer',
-        },
       }}
-      onClick={toggleCompletion}
     >
       <CardContent>
         <Typography variant="h5" component="div">
@@ -54,6 +49,13 @@ const Task = ({ task, onDeleteTask }) => {
         </Typography>
         <br />
         <hr />
+        <Switch
+            checked={isCompleted}
+            onChange={toggleCompletion}
+            color="primary"
+          />
+          <br />
+          <br />
         <Button variant="contained" color="secondary" onClick={handleEditClick}>
           Edit
         </Button>

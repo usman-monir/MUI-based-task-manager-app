@@ -12,16 +12,18 @@ const EditTaskForm = () => {
 
   useEffect(() => {
     const fetchTask = async () => {
-      try {
-        const fetchedTask = await TaskService.fetchTaskById(id);
-        setTask(fetchedTask);
+
+    const response = await TaskService.fetchTaskById(id);
+    if (response?.success)
+      {
+        setTask(response.data);
         setLoading(false);
-      } catch (error) {
-        setError(error.message);
+      }
+      else{
+        setError(response?.message);
         setLoading(false);
       }
     };
-
     fetchTask();
   }, [id]);
 
@@ -35,12 +37,11 @@ const EditTaskForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await TaskService.updateTask(id, task);
-      navigate('/');
-    } catch (error) {
-      setError(error.message);
-    }
+
+    const response =  await TaskService.updateTask(id, task);
+    if (response?.success) navigate('/');
+    else
+    setError(response?.message);
   };
 
   if (loading) {

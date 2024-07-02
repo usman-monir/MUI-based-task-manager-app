@@ -14,7 +14,12 @@ const createTask = asyncHandler(async (req, res) => {
   });
 
   const createdTask = await task.save();
-  res.status(201).json(createdTask);
+  if (!task) return res.status(401).json({
+    success: false,
+    message: 'Cannot create task!',
+    data: null,
+  })
+  res.status(201).json({data: createdTask, success: true});
 });
 
 // @desc    Get all tasks for the logged-in user
@@ -22,7 +27,12 @@ const createTask = asyncHandler(async (req, res) => {
 // @access  Private
 const getTasks = asyncHandler(async (req, res) => {
   const tasks = await Task.find({ user: req.user._id });
-  res.json(tasks);
+  if (tasks || tasks.length == 0) return res.json({data: tasks, success: true});
+  if (!tasks) return res.status(401).json({
+    success: false,
+    message: 'Cannot get tasks!',
+    data: null,
+  })
 });
 
 // @desc    Get a task by ID
@@ -32,10 +42,13 @@ const getTaskById = asyncHandler(async (req, res) => {
   const task = await Task.findById(req.params.id);
 
   if (task && task.user.equals(req.user._id)) {
-    res.json(task);
+    res.json({data: task, success: true});
   } else {
-    res.status(404);
-    throw new Error('Task not found');
+    return res.status(404).json({
+      success: false,
+      message: 'Cannot get task!',
+      data: null,
+    })
   }
 });
 
@@ -53,10 +66,13 @@ const updateTask = asyncHandler(async (req, res) => {
     task.completed = completed ?? task.completed;
 
     const updatedTask = await task.save();
-    res.json(updatedTask);
+    res.json({data: updatedTask, success: true});
   } else {
-    res.status(404);
-    throw new Error('Task not found');
+    return res.status(404).json({
+      success: false,
+      message: 'Task not found!',
+      data: null,
+    })
   }
 });
 
@@ -68,10 +84,13 @@ const deleteTask = asyncHandler(async (req, res) => {
 
     if (task && task.user.equals(req.user._id)) {
       await Task.findByIdAndDelete(req.params.id);
-      res.json({ message: 'Task removed' });
+      res.json({data: task, success: true, message: 'Task removed' });
     } else {
-      res.status(404);
-      throw new Error('Task not found');
+      return res.status(404).json({
+        success: false,
+        message: 'Task not found!',
+        data: null,
+      })
     }
   });
 

@@ -19,12 +19,10 @@ const NewTaskForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await TaskService.createTask(task);
-      navigate("/");
-    } catch (error) {
-      setError(error.message);
-    }
+
+    const response = await TaskService.createTask(task);
+    if (response?.success) navigate("/");
+    else setError(response?.message);
   };
 
   if (loading) {

@@ -1,6 +1,5 @@
 import axiosInstance from './axiosInstance';
 import { TASKS_API } from '../constants';
-import handleError from '../utils/handleError';
 import handleResponse from '../utils/handleResponse';
 
 const TaskService = {
@@ -9,7 +8,7 @@ const TaskService = {
       const response = await axiosInstance.get(TASKS_API);
       return handleResponse(response);
     } catch (error) {
-     handleError(error);
+      console.log(error);
     }
   },
 
@@ -18,7 +17,7 @@ const TaskService = {
       const response = await axiosInstance.get(`${TASKS_API}/${taskId}`);
       return handleResponse(response);
     } catch (error) {
-     handleError(error);
+      console.log(error);
     }
   },
 
@@ -27,7 +26,7 @@ const TaskService = {
       const response = await axiosInstance.post(TASKS_API, taskData);
       return handleResponse(response);
     } catch (error) {
-      handleError(error);
+      console.log(error);
     }
   },
 
@@ -36,7 +35,7 @@ const TaskService = {
       const response = await axiosInstance.put(`${TASKS_API}/${taskId}`, taskData);
       return handleResponse(response);
     } catch (error) {
-      handleError(error);
+      console.log(error);
     }
   },
 
@@ -45,7 +44,7 @@ const TaskService = {
       const response = await axiosInstance.delete(`${TASKS_API}/${taskId}`);
       return handleResponse(response);
     } catch (error) {
-      handleError(error);
+      console.log(error);
     }
   },
 };

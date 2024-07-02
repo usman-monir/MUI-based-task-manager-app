@@ -1,17 +1,15 @@
 import axiosInstance from './axiosInstance';
 import { USERS_API } from '../constants';
-import handleError from '../utils/handleError';
 import handleResponse from '../utils/handleResponse';
 
 const AuthService = {
 
   async login (email, password){
-    let response;
   try {
-    response = await axiosInstance.post(`${USERS_API}/login`, { email, password });
+    const response = await axiosInstance.post(`${USERS_API}/login`, { email, password });
     return handleResponse(response);
   } catch (error) {
-    handleError(error);
+    console.log( error);
   }
   },
 
@@ -20,7 +18,7 @@ const AuthService = {
     const response = await axiosInstance.post(`${USERS_API}`, { name, email, password });
     return handleResponse(response);
   } catch (error) {
-    handleError(error);
+    console.log(error);
   }
   },
 
@@ -30,7 +28,7 @@ const AuthService = {
     localStorage.setItem('userInfo', null);
     return handleResponse(response);
   } catch (error) {
-    handleError(error);
+    console.log(error);
   }
 }
 }

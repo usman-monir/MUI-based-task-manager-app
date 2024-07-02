@@ -1,29 +1,37 @@
-import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
+import { Formik, Form, Field } from "formik";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Link, useNavigate } from 'react-router-dom';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import { Alert } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { TextField } from 'formik-mui';
-import AuthService from '../../services/authService';
+import { Link, useNavigate } from "react-router-dom";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import { Alert } from "@mui/material";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { TextField } from "formik-mui";
+import AuthService from "../../services/authService";
+import { registerationValidation } from "../../validations/authValidations";
 
 function Copyright(props) {
   return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" to="https://github.com/usman-monir/MUI-based-task-manager-app.git">
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
+      {"Copyright © "}
+      <Link
+        color="inherit"
+        to="https://github.com/usman-monir/MUI-based-task-manager-app.git"
+      >
         Task Manager App
-      </Link>{' '}
+      </Link>{" "}
       {new Date().getFullYear()}
-      {'.'}
+      {"."}
     </Typography>
   );
 }
@@ -32,6 +40,26 @@ const defaultTheme = createTheme();
 
 const RegisterScreen = () => {
   const navigate = useNavigate();
+  const initialValues = {
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  };
+  const handleSubmission = async (values, { setSubmitting, setFieldError }) => {
+
+    const response = await AuthService.register(
+    values.name,
+    values.email,
+    values.password
+    );
+    if (response.success) {
+    navigate("/login");
+    } else {
+    setFieldError("general", response.message);
+    }
+    setSubmitting(false);
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -40,49 +68,27 @@ const RegisterScreen = () => {
         <Box
           sx={{
             marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Register
           </Typography>
           <Formik
-            initialValues={{
-              name: '',
-              email: '',
-              password: '',
-              confirmPassword: '',
-            }}
-            validationSchema={Yup.object({
-              name: Yup.string().required('Name is required'),
-              email: Yup.string().email('Invalid email address').required('Email is required'),
-              password: Yup.string().required('Password is required'),
-              confirmPassword: Yup.string()
-                .oneOf([Yup.ref('password'), null], 'Password mismatch')
-                .required('Confirm Password is required'),
-            })}
-            onSubmit={async (values, { setSubmitting, setFieldError }) => {
-              try {
-                const response = await AuthService.register(values.name, values.email, values.password);
-                if (response.success) {
-                  navigate('/login');
-                } else {
-                  setFieldError('general', response.error);
-                }
-              } catch (error) {
-                setFieldError('general', error.message || 'Failed to register');
-              }
-              setSubmitting(false);
-            }}
+            initialValues={initialValues}
+            validationSchema={registerationValidation}
+            onSubmit={handleSubmission}
           >
             {({ submitForm, resetForm, isSubmitting, errors }) => (
               <Form>
-                {errors.general && <Alert severity="error">{errors.general}</Alert>}
+                {errors.general && (
+                  <Alert severity="error">{errors.general}</Alert>
+                )}
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Field
