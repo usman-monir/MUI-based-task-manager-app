@@ -8,7 +8,11 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+    </>
+  );
 };
 
 export default App;

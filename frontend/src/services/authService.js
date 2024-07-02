@@ -6,11 +6,12 @@ import handleResponse from '../utils/handleResponse';
 const AuthService = {
 
   async login (email, password){
+    let response;
   try {
-    const response = await axiosInstance.post(`${USERS_API}/login`, { email, password });
+    response = await axiosInstance.post(`${USERS_API}/login`, { email, password });
     return handleResponse(response);
   } catch (error) {
-    handleError(error);
+    handleError(response, error);
   }
   },
 

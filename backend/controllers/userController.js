@@ -16,7 +16,8 @@ const loginUser = asyncHandler(async (req, res) =>{
             _id: user._id,
             name: user.name,
             email: user.email,
-            message: "user logged in successfully!"
+            message: "user logged in successfully!",
+            success: true,
         })
     }
 
@@ -49,7 +50,8 @@ const registerUser = asyncHandler(async (req, res) =>{
             _id: user._id,
             name: user.name,
             email: user.email,
-            message: "user registered successfully!"
+            message: "user registered successfully!",
+            success: true,
         })
     }
     else{

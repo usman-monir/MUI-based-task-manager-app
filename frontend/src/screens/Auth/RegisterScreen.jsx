@@ -18,7 +18,7 @@ function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
-      <Link color="inherit" href="https://github.com/usman-monir/MUI-based-task-manager-app.git">
+      <Link color="inherit" to="https://github.com/usman-monir/MUI-based-task-manager-app.git">
         Task Manager App
       </Link>{' '}
       {new Date().getFullYear()}
@@ -31,67 +31,71 @@ const defaultTheme = createTheme();
 
 const RegisterScreen = () => {
   const navigate = useNavigate();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [nameError, setNameError] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [confirmPasswordError, setConfirmPasswordError] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+
+  const defaultState = {
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    nameError: "",
+    emailError: "",
+    passwordError: "",
+    confirmPasswordError: "",
+    errorMessage: "",
+  };
+
+  const [formData, setFormData] = useState(defaultState);
+
+  const handleChange = (event) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
 
   const resetForm = () => {
-    setName('');
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
-    setNameError('');
-    setEmailError('');
-    setPasswordError('');
-    setConfirmPasswordError('');
-    setErrorMessage('');
+    setFormData(defaultState);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Validate inputs
+    const { name, email, password, confirmPassword } = formData;
+    let valid = true;
+
     if (!name) {
-      setNameError('Name is required');
+      setFormData((prevState) => ({ ...prevState, nameError: 'Name is required' }));
+      valid = false;
     }
 
     if (!email) {
-      setEmailError('Email is required');
+      setFormData((prevState) => ({ ...prevState, emailError: 'Email is required' }));
+      valid = false;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setEmailError('Invalid email address');
+      setFormData((prevState) => ({ ...prevState, emailError: 'Invalid email address' }));
+      valid = false;
     }
 
     if (!password) {
-      setPasswordError('Password is required');
+      setFormData((prevState) => ({ ...prevState, passwordError: 'Password is required' }));
+      valid = false;
     }
 
     if (!confirmPassword) {
-      setConfirmPasswordError('Confirm Password is required');
+      setFormData((prevState) => ({ ...prevState, confirmPasswordError: 'Confirm Password is required' }));
+      valid = false;
     }
 
     if (password !== confirmPassword) {
-      setConfirmPasswordError('Password mismatch!');
-      return;
+      setFormData((prevState) => ({ ...prevState, confirmPasswordError: 'Password mismatch!' }));
+      valid = false;
     }
 
-    if(!name || !email || !password || !confirmPassword) return;
+    if (!valid) return;
 
-    // Register a user by calling backend api
-    try {
-      const response = await AuthService.register(name, email, password);
-      console.log('Registered:', response);
-      navigate('/login');
-    } catch (error) {
-      console.error('Error registering:', error);
-      setErrorMessage(error.message || 'Failed to Register');
+    const response = await AuthService.register(name, email, password);
+    if (response.success) navigate('/login');
+    else{
+      setFormData({...formData, errorMessage: response.error});
     }
-  };
+};
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -112,21 +116,21 @@ const RegisterScreen = () => {
             Register
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+            {formData.errorMessage && <Alert severity="error">{formData.errorMessage}</Alert>}
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
                   autoComplete="given-name"
                   name="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={formData.name}
+                  onChange={handleChange}
                   required
                   fullWidth
                   id="name"
                   label="Name"
                   autoFocus
-                  error={!!nameError}
-                  helperText={nameError}
+                  error={!!formData.nameError}
+                  helperText={formData.nameError}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -136,11 +140,11 @@ const RegisterScreen = () => {
                   id="email"
                   label="Email Address"
                   name="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
                   autoComplete="email"
-                  error={!!emailError}
-                  helperText={emailError}
+                  error={!!formData.emailError}
+                  helperText={formData.emailError}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -148,29 +152,29 @@ const RegisterScreen = () => {
                   required
                   fullWidth
                   name="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={handleChange}
                   label="Password"
                   type="password"
                   id="password"
                   autoComplete="new-password"
-                  error={!!passwordError}
-                  helperText={passwordError}
+                  error={!!formData.passwordError}
+                  helperText={formData.passwordError}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
-                  name="confirm_password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
                   label="Confirm Password"
                   type="password"
                   id="confirm_password"
                   autoComplete="confirm-password"
-                  error={!!confirmPasswordError}
-                  helperText={confirmPasswordError}
+                  error={!!formData.confirmPasswordError}
+                  helperText={formData.confirmPasswordError}
                 />
               </Grid>
             </Grid>
