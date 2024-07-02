@@ -1,18 +1,19 @@
-import { useState } from "react";
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import { Link, useNavigate } from "react-router-dom";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Alert from "@mui/material/Alert";
-import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import AuthService from "../../services/authService";
+import { Link, useNavigate } from 'react-router-dom';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Alert from '@mui/material/Alert';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { TextField } from 'formik-mui';
+import AuthService from '../../services/authService';
 
 function Copyright(props) {
   return (
@@ -30,60 +31,7 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 const LoginScreen = () => {
-
-  const defaultState = {
-    email: "",
-    password: "",
-    emailError: "",
-    passwordError: "",
-    errorMessage: "",
-  }
   const navigate = useNavigate();
-  const [formData, setFormData] = useState(defaultState);
-
-  const handleEmailChange = (event) => {
-    setFormData({...formData, email: event.target.value});
-
-  };
-
-  const handlePasswordChange = (event) => {
-    setFormData({...formData, password: event.target.value});
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const {email, password} = formData;
-    let valid = true;
-
-    if (!email) {
-      setFormData({...formData, emailError:  "Email is required"});
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setFormData({...formData, emailError:  "Invalid email address!"});
-      valid = false;
-    }
-
-    if (!password) {
-      setFormData({...formData, passwordError:  "Password is required"});
-      valid = false;
-    }
-
-    if(!valid) return;
-
-    const response = AuthService.login(email, password);
-    console.log(response);
-    if (response?.success){
-      localStorage.setItem("userInfo", JSON.stringify(response));
-      navigate("/");
-    }
-    else{
-      setFormData({...formData, errorMessage: response?.error || 'unexpected error'});
-    }
-  };
-
-  const resetFormData = () => {
-   setFormData(defaultState)
-  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -92,65 +40,89 @@ const LoginScreen = () => {
         <Box
           sx={{
             marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            {formData.errorMessage && <Alert severity="error">{formData.errorMessage}</Alert>}
-            <TextField
-              margin="normal"
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={formData.email}
-              onChange={handleEmailChange}
-              error={!!formData.emailError}
-              helperText={formData.emailError}
-            />
-            <TextField
-              margin="normal"
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={formData.password}
-              onChange={handlePasswordChange}
-              error={!!formData.passwordError}
-              helperText={formData.passwordError}
-            />
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              Sign In
-            </Button>
-            <Grid container>
-              <Grid item xs={10}>
-                <Link to="/register" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-              <Grid item xs={2}>
-              <Button
-                  onClick={resetFormData}
-                  startIcon={<DeleteOutlinedIcon color="secondary" />}
+          <Formik
+            initialValues={{
+              email: '',
+              password: '',
+            }}
+            validationSchema={Yup.object({
+              email: Yup.string().email('Invalid email address').required('Email is required'),
+              password: Yup.string().required('Password is required'),
+            })}
+            onSubmit={async (values, { setSubmitting, setFieldError }) => {
+              try {
+                const response = await AuthService.login(values.email, values.password);
+                if (response?.success) {
+                  localStorage.setItem('userInfo', JSON.stringify(response));
+                  navigate('/');
+                }
+              } catch (error) {
+                setFieldError('general', error.message || 'Failed to login');
+              }
+              setSubmitting(false);
+            }}
+          >
+            {({ submitForm, resetForm, isSubmitting, errors }) => (
+              <Form>
+                {errors.general && <Alert severity="error">{errors.general}</Alert>}
+                <Field
+                  component={TextField}
+                  name="email"
+                  type="email"
+                  label="Email"
                   fullWidth
+                  margin="normal"
+                  autoFocus
+                />
+                <Field
+                  component={TextField}
+                  type="password"
+                  label="Password"
+                  name="password"
+                  fullWidth
+                  margin="normal"
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  sx={{ mt: 3, mb: 2 }}
+                  disabled={isSubmitting}
+                  onClick={submitForm}
                 >
-                  Reset
+                  Sign In
                 </Button>
-              </Grid>
-            </Grid>
-          </Box>
+                <Grid container>
+                  <Grid item xs={10}>
+                    <Link to="/register" variant="body2">
+                      {"Don't have an account? Sign Up"}
+                    </Link>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Button
+                      type="button"
+                      onClick={resetForm}
+                      startIcon={<DeleteOutlinedIcon color="secondary" />}
+                      fullWidth
+                    >
+                      Reset
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Form>
+            )}
+          </Formik>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>

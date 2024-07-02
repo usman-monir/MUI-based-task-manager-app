@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
 import { Link, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { TextField } from 'formik-mui';
 import AuthService from '../../services/authService';
 
 function Copyright(props) {
@@ -32,71 +33,6 @@ const defaultTheme = createTheme();
 const RegisterScreen = () => {
   const navigate = useNavigate();
 
-  const defaultState = {
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    nameError: "",
-    emailError: "",
-    passwordError: "",
-    confirmPasswordError: "",
-    errorMessage: "",
-  };
-
-  const [formData, setFormData] = useState(defaultState);
-
-  const handleChange = (event) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
-  };
-
-  const resetForm = () => {
-    setFormData(defaultState);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    const { name, email, password, confirmPassword } = formData;
-    let valid = true;
-
-    if (!name) {
-      setFormData((prevState) => ({ ...prevState, nameError: 'Name is required' }));
-      valid = false;
-    }
-
-    if (!email) {
-      setFormData((prevState) => ({ ...prevState, emailError: 'Email is required' }));
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setFormData((prevState) => ({ ...prevState, emailError: 'Invalid email address' }));
-      valid = false;
-    }
-
-    if (!password) {
-      setFormData((prevState) => ({ ...prevState, passwordError: 'Password is required' }));
-      valid = false;
-    }
-
-    if (!confirmPassword) {
-      setFormData((prevState) => ({ ...prevState, confirmPasswordError: 'Confirm Password is required' }));
-      valid = false;
-    }
-
-    if (password !== confirmPassword) {
-      setFormData((prevState) => ({ ...prevState, confirmPasswordError: 'Password mismatch!' }));
-      valid = false;
-    }
-
-    if (!valid) return;
-
-    const response = await AuthService.register(name, email, password);
-    if (response.success) navigate('/login');
-    else{
-      setFormData({...formData, errorMessage: response.error});
-    }
-};
-
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
@@ -115,94 +51,115 @@ const RegisterScreen = () => {
           <Typography component="h1" variant="h5">
             Register
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            {formData.errorMessage && <Alert severity="error">{formData.errorMessage}</Alert>}
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  autoComplete="given-name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  fullWidth
-                  id="name"
-                  label="Name"
-                  autoFocus
-                  error={!!formData.nameError}
-                  helperText={formData.nameError}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  autoComplete="email"
-                  error={!!formData.emailError}
-                  helperText={formData.emailError}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  error={!!formData.passwordError}
-                  helperText={formData.passwordError}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  label="Confirm Password"
-                  type="password"
-                  id="confirm_password"
-                  autoComplete="confirm-password"
-                  error={!!formData.confirmPasswordError}
-                  helperText={formData.confirmPasswordError}
-                />
-              </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Create Account
-            </Button>
-            <Grid container>
-              <Grid item xs={10}>
-                <Link to="/login" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-              </Grid>
-              <Grid item xs={2}>
+          <Formik
+            initialValues={{
+              name: '',
+              email: '',
+              password: '',
+              confirmPassword: '',
+            }}
+            validationSchema={Yup.object({
+              name: Yup.string().required('Name is required'),
+              email: Yup.string().email('Invalid email address').required('Email is required'),
+              password: Yup.string().required('Password is required'),
+              confirmPassword: Yup.string()
+                .oneOf([Yup.ref('password'), null], 'Password mismatch')
+                .required('Confirm Password is required'),
+            })}
+            onSubmit={async (values, { setSubmitting, setFieldError }) => {
+              try {
+                const response = await AuthService.register(values.name, values.email, values.password);
+                if (response.success) {
+                  navigate('/login');
+                } else {
+                  setFieldError('general', response.error);
+                }
+              } catch (error) {
+                setFieldError('general', error.message || 'Failed to register');
+              }
+              setSubmitting(false);
+            }}
+          >
+            {({ submitForm, resetForm, isSubmitting, errors }) => (
+              <Form>
+                {errors.general && <Alert severity="error">{errors.general}</Alert>}
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <Field
+                      component={TextField}
+                      name="name"
+                      type="text"
+                      label="Name"
+                      fullWidth
+                      margin="normal"
+                      autoComplete="given-name"
+                      autoFocus
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Field
+                      component={TextField}
+                      name="email"
+                      type="email"
+                      label="Email Address"
+                      fullWidth
+                      margin="normal"
+                      autoComplete="email"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Field
+                      component={TextField}
+                      name="password"
+                      type="password"
+                      label="Password"
+                      fullWidth
+                      margin="normal"
+                      autoComplete="new-password"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Field
+                      component={TextField}
+                      name="confirmPassword"
+                      type="password"
+                      label="Confirm Password"
+                      fullWidth
+                      margin="normal"
+                      autoComplete="confirm-password"
+                    />
+                  </Grid>
+                </Grid>
                 <Button
-                  onClick={resetForm}
-                  startIcon={<DeleteOutlinedIcon color="secondary" />}
+                  variant="contained"
+                  color="primary"
                   fullWidth
+                  sx={{ mt: 3, mb: 2 }}
+                  disabled={isSubmitting}
+                  onClick={submitForm}
                 >
-                  Reset
+                  Create Account
                 </Button>
-              </Grid>
-            </Grid>
-          </Box>
+                <Grid container>
+                  <Grid item xs={10}>
+                    <Link to="/login" variant="body2">
+                      Already have an account? Sign in
+                    </Link>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Button
+                      type="button"
+                      onClick={resetForm}
+                      startIcon={<DeleteOutlinedIcon color="secondary" />}
+                      fullWidth
+                    >
+                      Reset
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Form>
+            )}
+          </Formik>
         </Box>
         <Box mt={5}>
           <Copyright />

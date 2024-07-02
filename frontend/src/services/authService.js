@@ -11,7 +11,7 @@ const AuthService = {
     response = await axiosInstance.post(`${USERS_API}/login`, { email, password });
     return handleResponse(response);
   } catch (error) {
-    handleError(response, error);
+    handleError(error);
   }
   },
 
