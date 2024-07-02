@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, Typography, Button, Alert } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Typography, Button, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import TaskService from '../../services/taskService';
 import Task from "../../components/Task"
@@ -17,7 +17,6 @@ const Tasks = () => {
     try {
       const fetchedTasks = await TaskService.fetchTasks();
       setErrorMessage('');
-      console.log(fetchedTasks);
       setTasks(fetchedTasks);
     } catch (error) {
       console.error('Failed to fetch tasks:', error);
@@ -45,7 +44,7 @@ const Tasks = () => {
     }
 
     return tasks?.map(task => (
-      <Task task={task} onDeleteTask={handleDeleteTask}/>
+      <Task task={task} key={task._id} onDeleteTask={handleDeleteTask}/>
     ));
   };
 

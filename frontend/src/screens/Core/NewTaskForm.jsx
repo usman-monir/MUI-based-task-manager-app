@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { TextField, Button, Container, Typography } from '@mui/material';
-import TaskService from '../../services/taskService'; // Ensure the correct path
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { TextField, Button, Container, Typography } from "@mui/material";
+import TaskService from "../../services/taskService"; // Ensure the correct path
 
 const NewTaskForm = () => {
   const navigate = useNavigate();
-  const [task, setTask] = useState({ title: '', description: '' });
-  const [loading, setLoading] = useState(false);
+  const [task, setTask] = useState({ title: "", description: "" });
+  const [loading] = useState(false);
   const [error, setError] = useState(null);
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,7 +21,7 @@ const NewTaskForm = () => {
     e.preventDefault();
     try {
       await TaskService.createTask(task);
-      navigate('/');
+      navigate("/");
     } catch (error) {
       setError(error.message);
     }
@@ -37,7 +36,7 @@ const NewTaskForm = () => {
   }
 
   return (
-    <Container component="main" maxWidth="xs" >
+    <Container component="main" maxWidth="xs">
       <Typography component="h1" variant="h5" marginTop="50px">
         Create New Task
       </Typography>

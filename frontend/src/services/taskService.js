@@ -7,7 +7,6 @@ const TaskService = {
   async fetchTasks() {
     try {
       const response = await axiosInstance.get(TASKS_API);
-      console.log(response);
       return handleResponse(response);
     } catch (error) {
      handleError(error);
@@ -17,7 +16,6 @@ const TaskService = {
   async fetchTaskById(taskId) {
     try {
       const response = await axiosInstance.get(`${TASKS_API}/${taskId}`);
-      console.log(response);
       return handleResponse(response);
     } catch (error) {
      handleError(error);
