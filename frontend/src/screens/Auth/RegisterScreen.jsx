@@ -10,6 +10,7 @@ import { Alert } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AuthService from '../../services/authService';
 
@@ -30,61 +31,61 @@ const defaultTheme = createTheme();
 
 const RegisterScreen = () => {
   const navigate = useNavigate();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-
-    const name = data.get('name');
-    const email = data.get('email');
-    const password = data.get('password');
-    const confirmPassword = data.get('confirm_password');
-
+  const resetForm = () => {
+    setName('');
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
     setNameError('');
     setEmailError('');
     setPasswordError('');
     setConfirmPasswordError('');
     setErrorMessage('');
+  };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // Validate inputs
     if (!name) {
       setNameError('Name is required');
-      return;
     }
 
     if (!email) {
       setEmailError('Email is required');
-      return;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       setEmailError('Invalid email address');
-      return;
     }
 
     if (!password) {
       setPasswordError('Password is required');
-      return;
     }
 
     if (!confirmPassword) {
       setConfirmPasswordError('Confirm Password is required');
-      return;
     }
 
-    if(password != confirmPassword) {
+    if (password !== confirmPassword) {
       setConfirmPasswordError('Password mismatch!');
       return;
     }
 
+    if(!name || !email || !password || !confirmPassword) return;
+
     // Register a user by calling backend api
     try {
-      const response = await  AuthService.register(name, email, password);
-      console.log('registered:', response);
+      const response = await AuthService.register(name, email, password);
+      console.log('Registered:', response);
       navigate('/login');
     } catch (error) {
       console.error('Error registering:', error);
@@ -111,12 +112,14 @@ const RegisterScreen = () => {
             Register
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+            {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
                   autoComplete="given-name"
                   name="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   required
                   fullWidth
                   id="name"
@@ -133,6 +136,8 @@ const RegisterScreen = () => {
                   id="email"
                   label="Email Address"
                   name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
                   error={!!emailError}
                   helperText={emailError}
@@ -143,6 +148,8 @@ const RegisterScreen = () => {
                   required
                   fullWidth
                   name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   label="Password"
                   type="password"
                   id="password"
@@ -156,7 +163,9 @@ const RegisterScreen = () => {
                   required
                   fullWidth
                   name="confirm_password"
-                  label="confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  label="Confirm Password"
                   type="password"
                   id="confirm_password"
                   autoComplete="confirm-password"
@@ -173,19 +182,30 @@ const RegisterScreen = () => {
             >
               Create Account
             </Button>
-            <Grid container justifyContent="flex-start">
-              <Grid item>
+            <Grid container>
+              <Grid item xs={10}>
                 <Link to="/login" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>
+              <Grid item xs={2}>
+                <Button
+                  onClick={resetForm}
+                  startIcon={<DeleteOutlinedIcon color="secondary" />}
+                  fullWidth
+                >
+                  Reset
+                </Button>
+              </Grid>
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 5 }} />
+        <Box mt={5}>
+          <Copyright />
+        </Box>
       </Container>
     </ThemeProvider>
   );
-}
+};
 
 export default RegisterScreen;
