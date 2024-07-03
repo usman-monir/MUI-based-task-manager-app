@@ -61,10 +61,10 @@ const Tasks = () => {
       <Typography variant="h4" gutterBottom>
         Your Tasks
       </Typography>
-      {renderTasks()}
-      <Button variant="contained" color="primary" onClick={handleCreateTask}>
+      <Button sx={{my: 3}} variant="contained" color="primary" onClick={handleCreateTask}>
         Create New Task
       </Button>
+      {renderTasks()}
     </div>
   );
 };

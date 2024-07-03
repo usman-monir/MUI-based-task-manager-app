@@ -1,7 +1,11 @@
+import TaskDataGrid from "../../components/TasksDataGrid"
 
 const Dashboard = () => {
   return (
-    <div>Dashboard</div>
+    <>
+      <h1>Dashboard</h1>
+      <TaskDataGrid/>
+    </>
   )
 }
 

@@ -1,16 +1,24 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+
 import { TextField, Button, Container, Typography } from '@mui/material';
 import TaskService from '../../services/taskService'; // Ensure the correct path
 
 const EditTaskForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [task, setTask] = useState({ title: '', description: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [redirect, setRedirect] = useState("");
 
   useEffect(() => {
+
+    const params = new URLSearchParams(location.search);
+    setRedirect(params.get('redirect') || '');
+
     const fetchTask = async () => {
 
     const response = await TaskService.fetchTaskById(id);
@@ -25,7 +33,7 @@ const EditTaskForm = () => {
       }
     };
     fetchTask();
-  }, [id]);
+  }, [id, location]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,7 +47,9 @@ const EditTaskForm = () => {
     e.preventDefault();
 
     const response =  await TaskService.updateTask(id, task);
-    if (response?.success) navigate('/');
+    if (response?.success) {
+      navigate(`/${redirect}`);
+    }
     else
     setError(response?.message);
   };
