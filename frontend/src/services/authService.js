@@ -10,6 +10,9 @@ const AuthService = {
     return handleResponse(response);
   } catch (error) {
     console.log( error);
+    if (error.response && error.response.status === 401) {
+      return handleResponse(error.response); // Handle 401 error specifically
+    }
   }
   },
 
