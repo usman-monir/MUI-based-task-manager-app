@@ -28,11 +28,35 @@ const AuthService = {
   async logout() {
   try {
     const response = await axiosInstance.post(`${USERS_API}/logout`);
-    localStorage.setItem('userInfo', null);
     return handleResponse(response);
   } catch (error) {
     console.log(error);
   }
-}
+  },
+
+  async updateProfile(name, email, password, imageUrl) {
+  try {
+    const response = await axiosInstance.put(`${USERS_API}/profile`, {name, email, password, imageUrl});
+    return handleResponse(response);
+  } catch (error) {
+    console.log(error);
+    if (error.response && error.response.status < 200 && error.response.status >= 300 ) {
+      return handleResponse(error.response);
+    }
+  }
+  },
+
+  async uploadProfilePicture (formData) {
+    try {
+      const response = await axiosInstance.post(`${USERS_API}/profile/upload-profile-photo`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.log(error);
+    }
+  },
 }
 export default AuthService;

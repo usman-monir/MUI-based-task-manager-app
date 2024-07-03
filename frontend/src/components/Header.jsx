@@ -1,12 +1,40 @@
+import { useState, useContext } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import Tooltip from "@mui/material/Tooltip";
+import { IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import AuthService from "../services/authService";
+import { Avatar } from "@mui/material";
+import Menu from "@mui/material/Menu";
+import { MenuItem } from "@mui/material";
+import defaultProfilePhoto from "../assets/images/defaultProfilePic.png"
+import { BASE_URL } from "../constants";
+import UserContext from "../context/UserContext";
 
 const Header = () => {
+  const { user } = useContext(UserContext);
+
+  const [anchorElUser, setAnchorElUser] = useState(null);
+
+  const pages = [
+    {
+      register: "Create New Account",
+      profile: "Profile",
+      dashboard: "Dashboard",
+      logout: "Logout",
+    },
+  ];
+
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
   const navigate = useNavigate();
 
   return (
@@ -21,18 +49,46 @@ const Header = () => {
           >
             Task Manager App
           </Typography>
-          <Button color="inherit" onClick={() => navigate("/register")}>
-            Create A New Account
-          </Button>
-          <Button
-            color="warning"
-            onClick={async () => {
-              await AuthService.logout();
-              navigate("/login");
-            }}
-          >
-            Logout
-          </Button>
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar alt="Remy Sharp" src={user.imageUrl ? `${BASE_URL}${user.imageUrl}` : defaultProfilePhoto} />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: "45px" }}
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {pages.map((page, i) => (
+                <MenuItem
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                  }}
+                  key={i}
+                  onClick={handleCloseUserMenu}
+                >
+                  {Object.entries(page).map(([url, title]) => (
+                    <Button fullWidth sx={{ justifyContent: 'flex-start'}} key={url} onClick={() => navigate(url)}>
+                      {title}
+                    </Button>
+                  ))}
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
         </Toolbar>
       </AppBar>
     </Box>

@@ -1,6 +1,8 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
+import multer from "multer";
+import path from "path"
 
 // @desc    Auth User and get token
 // @route   POST /api/users/login
@@ -12,7 +14,7 @@ const loginUser = asyncHandler(async (req, res) => {
   if (user && (await user.matchPassword(password))) {
     generateToken(res, user._id);
     return res.json({
-      data: { _id: user._id, name: user.name, email: user.email },
+      data: { _id: user._id, name: user.name, email: user.email, imageUrl: user.imageUrl},
       message: "user logged in successfully!",
       success: true,
     });
@@ -49,7 +51,7 @@ const registerUser = asyncHandler(async (req, res) => {
   if (user) {
     generateToken(res, user._id);
     res.status(201).json({
-      data: { _id: user._id, name: user.name, email: user.email },
+      data: { _id: user._id, name: user.name, email: user.email, imageUrl: user.imageUrl },
       message: "user registered successfully!",
       success: true,
     });
@@ -84,7 +86,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 
   if (user) {
     res.json({
-      data: { _id: user._id, name: user.name, email: user.email },
+      data: { _id: user._id, name: user.name, email: user.email, imageUrl: user.imageUrl },
       success: true,
     });
   } else {
@@ -110,9 +112,11 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       res.status(400).json({
         success: false,
         message: "User with this email already exists",
+        data: null,
       });
     }
     user.email = req.body.email || user.email;
+    user.imageUrl = req.body.imageUrl || user.imageUrl;
 
     if (req.body.password) {
       user.password = req.body.password;
@@ -125,16 +129,78 @@ const updateUserProfile = asyncHandler(async (req, res) => {
         _id: updatedUser._id,
         name: updatedUser.name,
         email: updatedUser.email,
+        imageUrl: user.imageUrl,
       },
       success: true,
+      message: "Profile updated successfully."
     });
   } else {
     res.status(404).json({
       success: false,
       message: "User not found",
+      data: null,
     });
   }
 });
+
+
+// @desc    Upload User Profile Picture
+// @route   POST /api/users/profile/upload-profile-picture
+// @access  Private
+const uploadUserProfilePhoto = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'User not found',
+    });
+  }
+
+  const __dirname = path.resolve();
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, path.join(__dirname, 'backend', 'assets', 'images'));
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`);
+    },
+  });
+
+  const upload = multer({ storage }).single('profilePic');
+
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to upload profile picture',
+        error: err.message,
+      });
+    }
+
+    const imageUrl = `/images/${req.file.filename}`; // Adjust the URL to match the static file serving route
+
+    user.imageUrl = imageUrl;
+
+    try {
+      await user.save();
+      res.json({
+        success: true,
+        data: {
+          imageUrl,
+        },
+        message: 'Profile photo updated successfully',
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to update profile photo',
+        error: error.message,
+      });
+    }
+  });
+});
+
 
 export {
   loginUser,
@@ -142,4 +208,5 @@ export {
   logoutUser,
   getUserProfile,
   updateUserProfile,
+  uploadUserProfilePhoto,
 };

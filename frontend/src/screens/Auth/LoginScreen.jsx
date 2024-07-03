@@ -14,6 +14,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { TextField } from "formik-mui";
 import AuthService from "../../services/authService";
 import { loginValidation } from "../../validations/authValidations";
+import UserContext from "../../context/UserContext";
+import { useContext } from "react";
 
 function Copyright(props) {
   return (
@@ -39,6 +41,7 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 const LoginScreen = () => {
+  const {setUser} = useContext(UserContext);
   const navigate = useNavigate();
   const initialValues = {
     email: "",
@@ -47,7 +50,7 @@ const LoginScreen = () => {
   const handleSubmission = async (values, { setSubmitting, setFieldError }) => {
     const response = await AuthService.login(values.email, values.password);
     if (response?.success) {
-      localStorage.setItem("userInfo", JSON.stringify(response?.data));
+      setUser(response?.data)
       navigate("/");
     } else {
       setFieldError("general", response?.message || "Failed to login");
