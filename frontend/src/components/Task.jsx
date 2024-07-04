@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { Card, CardContent, Typography, Button, Switch } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import TaskService from '../services/taskService';
+import { memo, useState } from "react";
+import { Card, CardContent, Typography, Button, Switch } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import TaskService from "../services/taskService";
 
-const Task = ({ task, onDeleteTask }) => {
+const Task = memo(function TaskComponent({ task, onDeleteTask }) {
   const navigate = useNavigate();
   const [isCompleted, setIsCompleted] = useState(task.completed);
 
@@ -20,13 +20,16 @@ const Task = ({ task, onDeleteTask }) => {
   };
 
   const toggleCompletion = async () => {
-
     const updatedTask = { ...task, completed: !isCompleted };
     const response = await TaskService.updateTask(task._id, updatedTask);
-    if (response?.success)
+    if (response?.success) {
       setIsCompleted(!isCompleted);
-    else
-      console.error(`Failed to toggle task with ID ${task._id}:`, response?.message);
+    } else {
+      console.error(
+        `Failed to toggle task with ID ${task._id}:`,
+        response?.message
+      );
+    }
   };
 
   return (
@@ -35,9 +38,9 @@ const Task = ({ task, onDeleteTask }) => {
       sx={{
         maxWidth: 400,
         marginBottom: 2,
-        backgroundColor: isCompleted ? 'grey.300' : 'white',
-        opacity: isCompleted ? .5 : 1,
-        transition: 'all 0.5s',
+        backgroundColor: isCompleted ? "grey.300" : "white",
+        opacity: isCompleted ? 0.5 : 1,
+        transition: "all 0.5s",
       }}
     >
       <CardContent>
@@ -50,12 +53,12 @@ const Task = ({ task, onDeleteTask }) => {
         <br />
         <hr />
         <Switch
-            checked={isCompleted}
-            onChange={toggleCompletion}
-            color="primary"
-          />
-          <br />
-          <br />
+          checked={isCompleted}
+          onChange={toggleCompletion}
+          color="primary"
+        />
+        <br />
+        <br />
         <Button variant="contained" color="secondary" onClick={handleEditClick}>
           Edit
         </Button>
@@ -67,6 +70,6 @@ const Task = ({ task, onDeleteTask }) => {
       </CardContent>
     </Card>
   );
-};
+});
 
 export default Task;
