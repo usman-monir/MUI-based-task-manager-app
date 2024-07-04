@@ -7,7 +7,6 @@
     // console.log(response);
     //   throw new Error(response.statusText);
     // }
-    console.log(response.data);
     return response.data;
 };
 

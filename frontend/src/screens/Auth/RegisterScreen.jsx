@@ -92,7 +92,7 @@ const RegisterScreen = () => {
             validationSchema={registerationValidation}
             onSubmit={handleSubmission}
           >
-            {({ submitForm, resetForm, isSubmitting, errors }) => (
+            {({ resetForm, isSubmitting, errors }) => (
               <Form>
                 {errors?.general && (
                   <Alert severity="error">{errors?.general || 'Something went wrong'}</Alert>
@@ -151,7 +151,6 @@ const RegisterScreen = () => {
                   fullWidth
                   sx={{ mt: 3, mb: 2 }}
                   disabled={isSubmitting}
-                  onSubmit={submitForm}
                 >
                   Create Account
                 </Button>
