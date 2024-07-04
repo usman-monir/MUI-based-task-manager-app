@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect, useRef} from "react";
 import { useNavigate } from "react-router-dom";
 import { TextField, Button, Container, Typography } from "@mui/material";
 import TaskService from "../../services/taskService"; // Ensure the correct path
 
 const NewTaskForm = () => {
   const navigate = useNavigate();
+  const titleRef = useRef(null);
+
   const [task, setTask] = useState({ title: "", description: "" });
   const [loading] = useState(false);
   const [error, setError] = useState(null);
@@ -16,6 +18,12 @@ const NewTaskForm = () => {
       [name]: value,
     }));
   };
+
+  useEffect(() => {
+    if (titleRef.current) {
+      titleRef.current.focus();
+    }
+  }, [loading]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,6 +56,7 @@ const NewTaskForm = () => {
           name="title"
           value={task.title}
           onChange={handleChange}
+          inputRef={titleRef}
           autoFocus
         />
         <TextField

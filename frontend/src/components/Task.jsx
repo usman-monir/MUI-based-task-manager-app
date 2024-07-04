@@ -1,36 +1,35 @@
-import { memo, useState } from "react";
-import { Card, CardContent, Typography, Button, Switch } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import TaskService from "../services/taskService";
+import { useState, useCallback } from 'react';
+import { Card, CardContent, Typography, Button, Switch } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import TaskService from '../services/taskService';
+import { memo } from 'react';
 
-const Task = memo(function TaskComponent({ task, onDeleteTask }) {
+
+const Task = memo( function Task ({ task, onDeleteTask }){
   const navigate = useNavigate();
   const [isCompleted, setIsCompleted] = useState(task.completed);
 
-  const handleDeleteTask = async () => {
+  const handleDeleteTask = useCallback(async () => {
     try {
       onDeleteTask(task._id);
     } catch (error) {
       console.error(`Failed to delete task with ID ${task._id}:`, error);
     }
-  };
+  }, [onDeleteTask, task._id]);
 
-  const handleEditClick = () => {
+  const handleEditClick = useCallback(() => {
     navigate(`/tasks/${task._id}/edit`);
-  };
+  }, [navigate, task._id]);
 
-  const toggleCompletion = async () => {
+  const toggleCompletion = useCallback(async () => {
     const updatedTask = { ...task, completed: !isCompleted };
     const response = await TaskService.updateTask(task._id, updatedTask);
     if (response?.success) {
       setIsCompleted(!isCompleted);
     } else {
-      console.error(
-        `Failed to toggle task with ID ${task._id}:`,
-        response?.message
-      );
+      console.error(`Failed to toggle task with ID ${task._id}:`, response?.message);
     }
-  };
+  }, [isCompleted, task]);
 
   return (
     <Card
@@ -38,9 +37,9 @@ const Task = memo(function TaskComponent({ task, onDeleteTask }) {
       sx={{
         maxWidth: 400,
         marginBottom: 2,
-        backgroundColor: isCompleted ? "grey.300" : "white",
+        backgroundColor: isCompleted ? 'grey.300' : 'white',
         opacity: isCompleted ? 0.5 : 1,
-        transition: "all 0.5s",
+        transition: 'all 0.5s',
       }}
     >
       <CardContent>
@@ -52,11 +51,7 @@ const Task = memo(function TaskComponent({ task, onDeleteTask }) {
         </Typography>
         <br />
         <hr />
-        <Switch
-          checked={isCompleted}
-          onChange={toggleCompletion}
-          color="primary"
-        />
+        <Switch checked={isCompleted} onChange={toggleCompletion} color="primary" />
         <br />
         <br />
         <Button variant="contained" color="secondary" onClick={handleEditClick}>

@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-
 import { TextField, Button, Container, Typography } from '@mui/material';
-import TaskService from '../../services/taskService'; // Ensure the correct path
+import TaskService from '../../services/taskService';
 
 const EditTaskForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const titleRef = useRef(null);
 
   const [task, setTask] = useState({ title: '', description: '' });
   const [loading, setLoading] = useState(true);
@@ -15,25 +15,27 @@ const EditTaskForm = () => {
   const [redirect, setRedirect] = useState("");
 
   useEffect(() => {
-
     const params = new URLSearchParams(location.search);
     setRedirect(params.get('redirect') || '');
 
     const fetchTask = async () => {
-
-    const response = await TaskService.fetchTaskById(id);
-    if (response?.success)
-      {
+      const response = await TaskService.fetchTaskById(id);
+      if (response?.success) {
         setTask(response.data);
         setLoading(false);
-      }
-      else{
+      } else {
         setError(response?.message);
         setLoading(false);
       }
     };
     fetchTask();
   }, [id, location]);
+
+  useEffect(() => {
+    if (titleRef.current) {
+      titleRef.current.focus();
+    }
+  }, [loading]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,13 +47,12 @@ const EditTaskForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const response =  await TaskService.updateTask(id, task);
+    const response = await TaskService.updateTask(id, task);
     if (response?.success) {
       navigate(`/${redirect}`);
+    } else {
+      setError(response?.message);
     }
-    else
-    setError(response?.message);
   };
 
   if (loading) {
@@ -63,7 +64,7 @@ const EditTaskForm = () => {
   }
 
   return (
-    <Container component="main" maxWidth="xs" >
+    <Container component="main" maxWidth="xs">
       <Typography component="h1" variant="h5" marginTop="50px">
         Edit Task
       </Typography>
@@ -77,6 +78,7 @@ const EditTaskForm = () => {
           name="title"
           value={task.title}
           onChange={handleChange}
+          inputRef={titleRef}
           autoFocus
         />
         <TextField
