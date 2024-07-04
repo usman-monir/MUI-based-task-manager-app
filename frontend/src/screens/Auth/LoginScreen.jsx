@@ -81,7 +81,7 @@ const LoginScreen = () => {
             validationSchema={loginValidation}
             onSubmit={handleSubmission}
           >
-            {({ submitForm, resetForm, isSubmitting, errors }) => (
+            {({ resetForm, isSubmitting, errors }) => (
               <Form>
                 {errors.general && (
                   <Alert severity="error">{errors.general}</Alert>
@@ -105,11 +105,11 @@ const LoginScreen = () => {
                 />
                 <Button
                   variant="contained"
+                  type = "submit"
                   color="primary"
                   fullWidth
                   sx={{ mt: 3, mb: 2 }}
                   disabled={isSubmitting}
-                  onClick={submitForm}
                 >
                   Sign In
                 </Button>

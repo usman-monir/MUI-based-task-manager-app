@@ -1,10 +1,13 @@
  const handleResponse = (response) => {
     // if (response.status >= 200 && response.status < 300) {
     //   console.log(response);
-    //   return response.data.data;
-    // } else {
+    //   return response.data;
+    // }
+    // else {
+    // console.log(response);
     //   throw new Error(response.statusText);
     // }
+    console.log(response.data);
     return response.data;
 };
 

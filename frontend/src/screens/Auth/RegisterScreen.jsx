@@ -46,20 +46,28 @@ const RegisterScreen = () => {
     password: "",
     confirmPassword: "",
   };
-  const handleSubmission = async (values, { setSubmitting, setFieldError }) => {
 
-    const response = await AuthService.register(
-    values.name,
-    values.email,
-    values.password
-    );
-    if (response.success) {
-    navigate("/login");
-    } else {
-    setFieldError("general", response.message);
+  const handleSubmission = async (values, { setSubmitting, setFieldError }) => {
+    try {
+      const response = await AuthService.register(
+        values.name,
+        values.email,
+        values.password
+      );
+
+      if (response?.success) {
+        navigate("/login");
+      } else {
+        const errorMessage = response.message ? response.message : "Registration failed";
+        setFieldError("general", errorMessage);
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      setFieldError("general", "Something went wrong with the registration");
     }
     setSubmitting(false);
   };
+
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -86,8 +94,8 @@ const RegisterScreen = () => {
           >
             {({ submitForm, resetForm, isSubmitting, errors }) => (
               <Form>
-                {errors.general && (
-                  <Alert severity="error">{errors.general}</Alert>
+                {errors?.general && (
+                  <Alert severity="error">{errors?.general || 'Something went wrong'}</Alert>
                 )}
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
@@ -137,12 +145,13 @@ const RegisterScreen = () => {
                   </Grid>
                 </Grid>
                 <Button
+                  type="submit"
                   variant="contained"
                   color="primary"
                   fullWidth
                   sx={{ mt: 3, mb: 2 }}
                   disabled={isSubmitting}
-                  onClick={submitForm}
+                  onSubmit={submitForm}
                 >
                   Create Account
                 </Button>

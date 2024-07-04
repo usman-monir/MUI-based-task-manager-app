@@ -18,10 +18,13 @@ const AuthService = {
 
   async register (name, email, password) {
   try {
-    const response = await axiosInstance.post(`${USERS_API}`, { name, email, password });
+    const response = await axiosInstance.post(`${USERS_API}/`, { name, email, password });
     return handleResponse(response);
   } catch (error) {
     console.log(error);
+    if (error.response && error.response.status === 400) {
+      return handleResponse(error.response); // Handle 400 error specifically
+    }
   }
   },
 
