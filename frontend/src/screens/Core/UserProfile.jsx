@@ -17,6 +17,7 @@ import UserContext from "../../context/UserContext";
 
 const ProfilePage = () => {
   const { user, setUser } = useContext(UserContext);
+  const [userFormData, setUserFormData] = useState(user);
   const [message, setMessage] = useState("");
 
   const [isEditing, setIsEditing] = useState(false);
@@ -40,12 +41,12 @@ const ProfilePage = () => {
       return;
     }
     const response = await AuthService.updateProfile(
-      user.name,
-      user.email,
-      user.password,
-      user.imageUrl
+      userFormData.name,
+      userFormData.email,
+      userFormData.password,
+      userFormData.imageUrl
     );
-    setUser(response?.data)
+    if (response?.success) setUser(response?.data);
     setMessage(response?.message);
     console.log(user);
     setIsEditing(false);
@@ -60,10 +61,9 @@ const ProfilePage = () => {
       return;
     }
     const response = await AuthService.uploadProfilePicture(formData);
-    console.log(response);
     if (response?.success) {
-      console.log(response?.data.imageUrl);
       setUser({ ...user, imageUrl: response?.data.imageUrl });
+      setUserFormData({ ...userFormData, imageUrl: response?.data.imageUrl });
     }
     setMessage(response?.message);
   };
@@ -118,29 +118,38 @@ const ProfilePage = () => {
             <TextField
               label="Name"
               variant="outlined"
-              value={user.name}
-              onChange={(e) => setUser({ ...user, name: e.target.value })}
+              value={userFormData.name}
+              onChange={(e) =>
+                setUserFormData({ ...userFormData, name: e.target.value })
+              }
             />
             <TextField
               label="Email"
               variant="outlined"
-              value={user.email}
-              onChange={(e) => setUser({ ...user, email: e.target.value })}
+              value={userFormData.email}
+              onChange={(e) =>
+                setUserFormData({ ...userFormData, email: e.target.value })
+              }
             />
             <TextField
               label="Password"
               variant="outlined"
               type="password"
-              value={user.password}
-              onChange={(e) => setUser({ ...user, password: e.target.value })}
+              value={userFormData.password}
+              onChange={(e) =>
+                setUserFormData({ ...userFormData, password: e.target.value })
+              }
             />
             <TextField
               label="Confirm Password"
               variant="outlined"
               type="password"
-              value={user.confirmPassword}
+              value={userFormData.confirmPassword}
               onChange={(e) =>
-                setUser({ ...user, confirmPassword: e.target.value })
+                setUserFormData({
+                  ...userFormData,
+                  confirmPassword: e.target.value,
+                })
               }
             />
             <Button

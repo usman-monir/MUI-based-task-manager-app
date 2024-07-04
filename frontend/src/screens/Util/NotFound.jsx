@@ -1,8 +1,6 @@
-import React from 'react'
-
 const NotFound = () => {
   return (
-    <div>Path Not Found</div>
+    <h1>Path Not Found</h1>
   )
 }
 

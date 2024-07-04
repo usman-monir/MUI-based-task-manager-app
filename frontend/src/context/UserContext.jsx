@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from 'react';
 
 const UserContext = createContext();
 
+// eslint-disable-next-line react/prop-types
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const userInfo = localStorage.getItem('userInfo');

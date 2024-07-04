@@ -17,6 +17,7 @@ const TaskDataGrid = () => {
   const [rowData, setRowData] = useState([]);
 
   useEffect(() => {
+    console.log(rowData);
     const fetchTasks = async () => {
       const response = await TaskService.fetchTasks();
       if (response.success) {

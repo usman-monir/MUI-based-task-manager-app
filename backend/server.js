@@ -34,7 +34,6 @@ app.use("/api/tasks", taskRoutes);
 
 const __dirname = path.resolve();
 
-console.log("__dirname", `${__dirname}/backend/`);
 app.use(
   "/images",
   express.static(path.join(`${__dirname}/backend/`, "./assets/images"))
