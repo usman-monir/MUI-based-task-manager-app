@@ -33,10 +33,10 @@ const ProfilePage = () => {
   };
 
   const handleSaveClick = async () => {
-    if (!user.name || !user.email) {
+    if (!userFormData.name || !userFormData.email) {
       setMessage("All fields are required");
       return;
-    } else if (user.password != user.confirmPassword) {
+    } else if (userFormData.password != userFormData.confirmPassword) {
       setMessage("Passwords do not match");
       return;
     }
@@ -48,7 +48,6 @@ const ProfilePage = () => {
     );
     if (response?.success) setUser(response?.data);
     setMessage(response?.message);
-    console.log(user);
     setIsEditing(false);
   };
 
