@@ -3,7 +3,6 @@ import { Card, CardContent, Typography, Button, Switch } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import TaskService from '../services/taskService';
 
-// eslint-disable-next-line react/prop-types
 const Task = ({ task, onDeleteTask }) => {
   const navigate = useNavigate();
   const [isCompleted, setIsCompleted] = useState(task.completed);
